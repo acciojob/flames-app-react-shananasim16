@@ -1,83 +1,78 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import '../styles/App.css';
 
-  const arr = ["Siblings", "Friends", "Love", "Affection", "Marriage", "Enemy"];
-  
-  const App = () => {
-    const [name1, setName1] = useState("");
-    const [name2, setName2] = useState("");
-    const [relationship, setRelationship] = useState("");
-    const [btnClicked, setBtnClicked] = useState(false);
-  
-    console.log(name1, name2);
-  
-    function calculateRelationship(e) {
-      e.preventDefault();
-  
-      if (name1.trim() === "" || name2.trim() === "") {
-        setBtnClicked(false);
-        setRelationship("Please Enter valid input");
-        return;
-      }
-  
-      let str1 = name1;
-      let str2 = name2;
-      for (let t of str1) {
-        if (str2.includes(t)) {
-          str1 = str1.replace(t, "");
-          str2 = str2.replace(t, "");
+const App = () => {
+    const [firstname, setFirstname] = useState("");
+    const [secondname, setSecondname] = useState("");
+    const [status, setStatus] = useState("");
+
+    const calculateRelationship = () => {
+        if(firstname === '' || secondname === ''){
+            setStatus('Please Enter valid input');
+            return;
         }
-      }
-      setName1(str1);
-      setName2(str2);
-      setBtnClicked(true);
-      setRelationship(arr[(name1.length + name2.length)%6]);
+
+        let firstArr = firstname.split("");
+        let secondArr = secondname.split("");
+        let newArr = [];
+
+        // To splice array and modify string
+        for(let i=0; i<firstArr.length; i++){
+            let flag = false;
+            for(let j=0; j<secondArr.length; j++){
+                if(firstArr[i]===secondArr[j]){
+                    secondArr.splice(j, 1);
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                // Then only need to add it(char) in our first string array
+                newArr.push(firstArr[i]);
+            }
+        }
+
+
+        // To calculate relationship status
+        let str = newArr.join("") + secondArr.join("");
+        let n = (str.length) % 6;
+        switch(n){
+            case 1 :
+                return setStatus('Friends');
+            case 2 :
+                return setStatus('Love');
+            case 3 :
+                return setStatus('Affection');
+            case 4 :
+                return setStatus('Marriage');
+            case 5 :
+                return setStatus('Enemy');
+            case 0 :
+                return setStatus('Siblings');
+        }
     }
-  
+
+    const clearStatus = () => {
+        setFirstname('');
+        setSecondname('');
+        setStatus('');
+    }
+
     return (
-      <div id="main">
-        <form>
-          <input
-            type="text"
-            name="name1"
-            data-testid="input1"
-            value={name1}
-            onChange={(e) => setName1(e.target.value)}
-          />
-  
-          <input
-            type="text"
-            name="name2"
-            data-testid="input2"
-            value={name2}
-            onChange={(e) => setName2(e.target.value)}
-          />
-  
-          <button
-            data-testid="calculate_relationship"
-            type="submit"
-            onClick={calculateRelationship}
-          >
-            Calculate Relationship Future
-          </button>
-  
-          <button
-            data-testid="clear"
-            type="reset"
-            onClick={() => {
-              setName1("");
-              setName2("");
-              setBtnClicked(false);
-              setRelationship("");
-            }}
-          >
-            Clear
-          </button>
-        </form>
-  
-        <h3 data-testid="answer">{relationship}</h3>
-      </div>
-    );
-  };
+        <div id="main">
+            {/* Do not remove the main div */}
+            <input type="text" placeholder="Enter first name" value={firstname} 
+                onChange={(e) => setFirstname(e.target.value)} data-testid="input1" name="name1"/>
+            <input type="text" placeholder="Enter second name" value={secondname} 
+                onChange={(e) => setSecondname(e.target.value)} data-testid="input2" name="name2" />
+            <button onClick={calculateRelationship} data-testid="calculate_relationship" >Calculate Relationship Future</button>
+            <button onClick={clearStatus} data-testid="clear" >Clear</button>
+
+            <h3 data-testid="answer" >{status}</h3>
+        </div>
+    )
+}
+
+
 
 export default App;
